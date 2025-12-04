@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, TextField, Button, Typography, Card, CardContent, Stack, InputAdornment, IconButton, Alert, Link } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { showSuccess, showError, showInfo } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const DEMO_CREDENTIALS = {
     email: 'demo@example.com',
     password: 'Demo@123',
   };
+
+  useEffect(() => {
+    if (loginSuccess) {
+      navigate('/dashboard');
+    }
+  }, [loginSuccess, navigate]);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -27,6 +36,7 @@ const Login: React.FC = () => {
   const handleDemoLogin = () => {
     setEmail(DEMO_CREDENTIALS.email);
     setPassword(DEMO_CREDENTIALS.password);
+    showInfo('Demo credentials filled in');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,40 +47,34 @@ const Login: React.FC = () => {
     // Basic validation
     if (!email || !password) {
       setError('Please fill in all fields');
+      showError('Please fill in all fields');
       setLoading(false);
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Please enter a valid email');
+      showError('Please enter a valid email');
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      showError('Password must be at least 6 characters');
       setLoading(false);
       return;
     }
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
-
       // Mock login
-      setTimeout(() => {
-        localStorage.setItem('token', 'mock-token');
-        localStorage.setItem('user', JSON.stringify({ email }));
-        navigate('/');
-        setLoading(false);
-      }, 1000);
+      localStorage.setItem('token', 'mock-token');
+      localStorage.setItem('user', JSON.stringify({ email }));
+      showSuccess('Login successful! Welcome back.');
+      setLoginSuccess(true);
     } catch (err) {
       setError('Login failed. Please try again.');
+      showError('Login failed. Please try again.');
       setLoading(false);
     }
   };

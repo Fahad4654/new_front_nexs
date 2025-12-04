@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { ToastProvider } from './context/ToastContext';
 import Login from './pages/Login';
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
@@ -22,44 +23,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, isAuthenticat
   return <>{children}</>;
 };
 
-const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-
-  // Check authentication on mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
-  }, []);
-
-  // Handle logout confirmation
-  const handleLogoutClick = () => {
-    setLogoutDialogOpen(true);
-  };
-
-  // Confirm logout
-  const handleConfirmLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setLogoutDialogOpen(false);
-  };
-
-  // Cancel logout
-  const handleCancelLogout = () => {
-    setLogoutDialogOpen(false);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
+const AppContent: React.FC<{
+  isAuthenticated: boolean;
+  handleLogoutClick: () => void;
+  handleConfirmLogout: () => void;
+  handleCancelLogout: () => void;
+  logoutDialogOpen: boolean;
+}> = ({ isAuthenticated, handleLogoutClick, handleConfirmLogout, handleCancelLogout, logoutDialogOpen }) => {
   return (
-    <Router>
+    <>
       <Routes>
         {/* Public Route - Login */}
         <Route
@@ -143,7 +115,58 @@ const App: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Router>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setLoading(false);
+  }, []);
+
+  // Handle logout confirmation
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  // Confirm logout
+  const handleConfirmLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setLogoutDialogOpen(false);
+  };
+
+  // Cancel logout
+  const handleCancelLogout = () => {
+    setLogoutDialogOpen(false);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <ToastProvider>
+      <Router>
+        <AppContent
+          isAuthenticated={isAuthenticated}
+          handleLogoutClick={handleLogoutClick}
+          handleConfirmLogout={handleConfirmLogout}
+          handleCancelLogout={handleCancelLogout}
+          logoutDialogOpen={logoutDialogOpen}
+        />
+      </Router>
+    </ToastProvider>
   );
 };
 
