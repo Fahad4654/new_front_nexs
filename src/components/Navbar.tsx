@@ -1,12 +1,11 @@
 import React from 'react';
 import { Drawer, Box, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Typography, Divider } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
-import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onLogout: () => void;
@@ -14,6 +13,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
   const navigate = useNavigate();
+  const location = useLocation(); // Hook to get current location
 
   const handleLogout = () => {
     onLogout();
@@ -57,14 +57,24 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
             <ListItemButton
               component={Link}
               to={item.path}
+              // Check if the current location matches the item path
+              selected={location.pathname === item.path}
               sx={{
                 color: 'hsl(210 40% 98%)',
                 '&:hover': {
                   backgroundColor: 'hsl(212 55% 35%)',
                 },
-                '&.active': {
+                // Style for the selected state
+                '&.Mui-selected': {
                   backgroundColor: 'hsl(211 51% 55%)',
+                  '&:hover': {
+                    backgroundColor: 'hsl(211 51% 45%)',
+                  },
                 },
+                // Ensure icon color inherits correctly in all states
+                '&.Mui-selected .MuiListItemIcon-root': {
+                   color: 'inherit'
+                }
               }}
             >
               <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
