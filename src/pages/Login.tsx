@@ -4,7 +4,13 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 
-const Login: React.FC = () => {
+// 1. Define Props Interface
+interface LoginProps {
+  onLogin: () => void;
+}
+
+// 2. Accept prop in component
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
   const { showSuccess, showError, showInfo } = useToast();
   const [email, setEmail] = useState('');
@@ -12,13 +18,15 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  // We can essentially remove loginSuccess state relying on onLogin, but keeping it harmless
+  const [loginSuccess, setLoginSuccess] = useState(false); 
 
   const DEMO_CREDENTIALS = {
     email: 'demo@example.com',
     password: 'Demo@123',
   };
 
+  // This might run, but App.tsx usually unmounts Login before this fires if state updates fast enough
   useEffect(() => {
     if (loginSuccess) {
       navigate('/dashboard');
@@ -70,7 +78,12 @@ const Login: React.FC = () => {
       // Mock login
       localStorage.setItem('token', 'mock-token');
       localStorage.setItem('user', JSON.stringify({ email }));
+      
       showSuccess('Login successful! Welcome back.');
+      
+      // 3. Call the parent handler to update App state immediately
+      onLogin();
+
       setLoginSuccess(true);
     } catch (err) {
       setError('Login failed. Please try again.');

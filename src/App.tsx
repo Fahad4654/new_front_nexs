@@ -25,11 +25,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, isAuthenticat
 
 const AppContent: React.FC<{
   isAuthenticated: boolean;
+  onLogin: () => void; // <--- Added prop definition
   handleLogoutClick: () => void;
   handleConfirmLogout: () => void;
   handleCancelLogout: () => void;
   logoutDialogOpen: boolean;
-}> = ({ isAuthenticated, handleLogoutClick, handleConfirmLogout, handleCancelLogout, logoutDialogOpen }) => {
+}> = ({ isAuthenticated, onLogin, handleLogoutClick, handleConfirmLogout, handleCancelLogout, logoutDialogOpen }) => {
   return (
     <>
       <Routes>
@@ -40,7 +41,8 @@ const AppContent: React.FC<{
             isAuthenticated ? (
               <Navigate to="/" replace />
             ) : (
-              <Login />
+              // <--- Passed onLogin prop to Login component
+              <Login onLogin={onLogin} />
             )
           }
         />
@@ -133,6 +135,11 @@ const App: React.FC = () => {
     setLoading(false);
   }, []);
 
+  // Handle Login (Update state immediately)
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
   // Handle logout confirmation
   const handleLogoutClick = () => {
     setLogoutDialogOpen(true);
@@ -160,6 +167,7 @@ const App: React.FC = () => {
       <Router>
         <AppContent
           isAuthenticated={isAuthenticated}
+          onLogin={handleLogin} // <--- Pass handler here
           handleLogoutClick={handleLogoutClick}
           handleConfirmLogout={handleConfirmLogout}
           handleCancelLogout={handleCancelLogout}
