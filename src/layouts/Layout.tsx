@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Grid, Container, IconButton, Drawer, useMediaQuery, useTheme, Box } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Drawer,
+  useMediaQuery,
+  useTheme,
+  Container,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Header from "../components/Header";
@@ -8,13 +15,14 @@ import Navbar from "../components/Navbar";
 
 interface LayoutProps {
   children: React.ReactNode;
+  onLogout: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
   const [navOpen, setNavOpen] = useState(true);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const toggleNav = () => {
     if (isMobile) {
@@ -53,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         >
           {mobileDrawerOpen || navOpen ? <CloseIcon /> : <MenuIcon />}
         </IconButton>
-        <Header />
+        <Header onLogout={onLogout} />
       </Box>
 
       {/* Mobile Drawer */}
@@ -61,9 +69,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         anchor="left"
         open={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
-        sx={{ display: { xs: 'block', sm: 'none' } }}
+        sx={{ display: { xs: "block", sm: "none" } }}
       >
-        <Navbar />
+        <Navbar onLogout={onLogout} />
       </Drawer>
 
       {/* Main Content */}
@@ -79,12 +87,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Box
             sx={{
               flexShrink: 0,
-              display: { xs: 'none', sm: 'block' },
+              display: { xs: "none", sm: "block" },
               height: "100%",
               overflowY: "auto",
             }}
           >
-            <Navbar />
+            <Navbar onLogout={onLogout} />
           </Box>
         )}
 
@@ -103,21 +111,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             minHeight: 0,
           }}
         >
-          <Container maxWidth="lg" sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <Container
+            maxWidth="lg"
+            sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+          >
             {children}
           </Container>
+          <Box
+            sx={{
+              flexShrink: 0,
+              height: "60px",
+              backgroundColor: "hsl(211 51% 55%)",
+            }}
+          >
+            <Footer />
+          </Box>
         </Box>
-      </Box>
-
-      {/* Footer */}
-      <Box
-        sx={{
-          flexShrink: 0,
-          height: "60px",
-          backgroundColor: "hsl(211 51% 55%)",
-        }}
-      >
-        <Footer />
       </Box>
     </Box>
   );
