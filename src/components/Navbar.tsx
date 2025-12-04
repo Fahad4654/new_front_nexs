@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
     { label: 'Home', path: '/', icon: <HomeIcon /> },
     { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { label: 'Users', path: '/users', icon: <PeopleIcon /> },
-    { label: 'Profile', path: '/profile', icon: <PersonIcon /> },
+    // { label: 'Profile', path: '/profile', icon: <PersonIcon /> },
   ];
 
   return (
